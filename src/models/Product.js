@@ -17,6 +17,10 @@ const productSchema = new mongoose.Schema({
   inStack: {
     type: Boolean,
     default: true
+  },
+  image: {
+    type: String,
+    default: null
   }
 }, {timestamps: true });
 

@@ -4,7 +4,16 @@ import Product from "../models/Product.js";
 // Create Product
 export const createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const { name, price, description, category } = req.body;
+
+    const product = await Product.create({
+      name,
+      price,
+      description,
+      category,
+      image: req.file ? req.file.filename : null, // add this line
+    });
+
     res.status(201).json({ message: "Product Created", product });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -38,11 +47,18 @@ export const getProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
+    const updatedData = { ...req.body };
+
+    if (req.file) {
+      updatedData.image = req.file.filename; // add file
+    }
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updatedData,
       { new: true }
     );
+
     if (!product) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product Updated", product });
   } catch (err) {
