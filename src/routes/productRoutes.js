@@ -14,7 +14,7 @@ const router = express.Router();
 // Create Product (with image upload)
 router.post("/", upload.single("image"), createProduct);
 
-// Get All Products
+// Get All Products (Search + Filter + Sort + Pagination)
 router.get("/", getProducts);
 
 // Get Single Product

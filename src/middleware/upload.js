@@ -1,13 +1,23 @@
 import multer from "multer";
-import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
+// Cloudinary config
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+
+// Storage setup
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "ecommerce-products",
+    allowed_formats: ["jpg", "png", "jpg"],
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
 });
 
 const upload = multer({ storage });

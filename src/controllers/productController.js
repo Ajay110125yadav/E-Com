@@ -1,38 +1,64 @@
 import Product from "../models/Product.js";
+import cloudinary from "cloudinary";
+import fs from "fs";
+
+// Cloudinary Config
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+  secure: true
+});
 
 // Create Product
 export const createProduct = async (req, res) => {
   try {
     const { name, price, description, category } = req.body;
 
+    let imageUrl = null;
+
+    if (req.file) {
+      const localPath = req.file.path; // local file path
+
+      // Upload to Cloudinary
+      const result = await cloudinary.v2.uploader.upload(localPath, {
+        folder: "ecommerce_products",
+        upload_preset: "ecommerce_products" // must be unsigned
+      });
+
+      // Delete local file only if it exists
+      if (fs.existsSync(localPath)) {
+        fs.unlinkSync(localPath);
+      }
+
+      imageUrl = result.secure_url;
+    }
+
     const product = await Product.create({
       name,
       price,
       description,
       category,
-      image: req.file ? req.file.filename : null,  // <-- add this line
+      image: imageUrl
     });
 
     res.status(201).json({ message: "Product Created", product });
+
   } catch (err) {
+    console.error("Error in createProduct:", err);
     res.status(500).json({ message: err.message });
   }
 };
-
-// Get All Products (Search + filter + Sort + Pagination);
 
 // Get All Products (Search + Filter + Sort + Pagination)
 export const getProducts = async (req, res) => {
   try {
     const { search, category, minPrice, maxPrice, sort, page = 1, limit = 10 } = req.query;
-
     let query = Product.find();
 
     // SEARCH
     if (search) {
-      query = query.find({
-        name: { $regex: search, $options: "i" },
-      });
+      query = query.find({ name: { $regex: search, $options: "i" } });
     }
 
     // FILTER BY CATEGORY
@@ -45,12 +71,12 @@ export const getProducts = async (req, res) => {
       query = query.find({
         price: {
           ...(minPrice && { $gte: minPrice }),
-          ...(maxPrice && { $lte: maxPrice }),
-        },
+          ...(maxPrice && { $lte: maxPrice })
+        }
       });
     }
 
-    // SORT  (✔ safe & error-free)
+    // SORT
     if (sort) {
       const [field, order] = sort.split(":");
       if (field) {
@@ -69,7 +95,6 @@ export const getProducts = async (req, res) => {
   }
 };
 
-
 // Get Single Product
 export const getProduct = async (req, res) => {
   try {
@@ -87,14 +112,24 @@ export const updateProduct = async (req, res) => {
     const updatedData = { ...req.body };
 
     if (req.file) {
-      updatedData.image = req.file.filename;  // <-- add this
+    // local file path
+    const localPath = req.file.path;
+
+    // upload to Cloudinary
+    const result = await cloudinary.v2.uploader.upload(localPath, {
+      folder: "ecommerce_products",
+      upload_preset: "ecommerce_products"
+    });
+
+    // delete local file
+    if (fs.existsSync(localPath)) {   // ✅ check karo file exist karti hai ya nahi
+      fs.unlinkSync(localPath);
     }
 
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      updatedData,
-      { new: true }
-    );
+    updatedData.image = result.secure_url;  // Cloudinary URL assign
+  }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, updatedData, { new: true });
 
     if (!product) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product Updated", product });
@@ -103,7 +138,7 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-// DELETE Product
+// Delete Product
 export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);

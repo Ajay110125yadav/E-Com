@@ -3,12 +3,14 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes.js';
 import ProductRoutes from './routes/productRoutes.js';
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/upload", uploadRoutes);
 app.use("/api/products", ProductRoutes);
 app.use("/uploads", express.static("uploads"));
 
