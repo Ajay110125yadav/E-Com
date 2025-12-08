@@ -13,6 +13,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/products", ProductRoutes);
 app.use("/uploads", express.static("uploads"));
+// ⚠️ JSON parser but LIMIT add karna zaroori hai
+app.use(express.json({ limit: "10mb" }));
+// ⚠️ URL encoded bhi add karo
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))

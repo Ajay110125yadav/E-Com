@@ -10,9 +10,12 @@ cloudinary.v2.config({
   secure: true
 });
 
+
 // Create Product
 export const createProduct = async (req, res) => {
   try {
+     console.log("File =>", req.file);
+     console.log("Body =>", req.body);
     const { name, price, description, category } = req.body;
 
     let imageUrl = null;
@@ -122,7 +125,7 @@ export const updateProduct = async (req, res) => {
     });
 
     // delete local file
-    if (fs.existsSync(localPath)) {   // ✅ check karo file exist karti hai ya nahi
+    if (fs.existsSync(localPath)) {   
       fs.unlinkSync(localPath);
     }
 
