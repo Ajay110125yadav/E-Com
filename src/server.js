@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes.js';
 import ProductRoutes from './routes/productRoutes.js';
 import uploadRoutes from "./routes/uploadRoutes.js";
+import categoryRoutes from './routes/categoryRoutes.js';
 
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use("/uploads", express.static("uploads"));
 app.use(express.json({ limit: "10mb" }));
 // ⚠️ URL encoded bhi add karo
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use("/api/category", categoryRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))

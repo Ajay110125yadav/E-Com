@@ -21,7 +21,9 @@ const productSchema = new mongoose.Schema({
   image: {
     type: String,
     default: null
-  }
+  },
+  category: { type: String }
+
 }, {timestamps: true });
 
 export default mongoose.model("Product", productSchema);
