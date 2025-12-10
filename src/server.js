@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes.js';
 import ProductRoutes from './routes/productRoutes.js';
 import uploadRoutes from "./routes/uploadRoutes.js";
 import categoryRoutes from './routes/categoryRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(express.json({ limit: "10mb" }));
 // ⚠️ URL encoded bhi add karo
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use("/api/category", categoryRoutes);
+app.use("/api/cart", cartRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))

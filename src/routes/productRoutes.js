@@ -15,24 +15,14 @@ import { adminMiddleware } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
-// Create Product (Admin Only)
 
-router.post("/", upload.single("image"), createProduct);
-
-// Get All Products (Search + Filter + Sort + Pagination)
-router.get("/", getProducts);
-
-// Get Single Product
+router.post("/", authMiddleware, adminMiddleware, upload.single("image"), createProduct);
+router.put("/:id", authMiddleware, adminMiddleware, upload.single("image"), updateProduct);
 router.get("/:id", getProduct);
+router.delete("/:id", authMiddleware, adminMiddleware, deleteProduct);
 
-// Update Product (with image upload)
-router.put(
-  "/:id", 
-  upload.single("image"),
-   updateProduct
-);
 
-// Delete Product
-router.delete("/:id", deleteProduct);
+
+
 
 export default router;
