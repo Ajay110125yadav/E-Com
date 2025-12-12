@@ -7,6 +7,7 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import categoryRoutes from './routes/categoryRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use("/api/category", categoryRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/orders", orderRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI)
