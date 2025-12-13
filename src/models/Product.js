@@ -22,7 +22,15 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  category: { type: String }
+  category: { type: String },
+  averageRating: {
+    type: Number,
+    default: 0
+  },
+  numReviews: {
+    type: Number,
+    default: 0
+  }
 
 }, {timestamps: true });
 
